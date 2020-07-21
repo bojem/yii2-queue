@@ -77,6 +77,7 @@ abstract class Queue extends Component
      * @var int default attempt count
      */
     public $attempts = 1;
+    public $queueName = 'queue';
 
     private $pushTtr;
     private $pushDelay;
@@ -243,6 +244,9 @@ abstract class Queue extends Component
             return $this->handleError($event);
         }
         try {
+            if (method_exists($event->job, 'setMessageId')) {
+                $event->job->setMessageId($id);
+            }
             $event->result = $event->job->execute($this);
         } catch (\Exception $error) {
             $event->error = $error;
